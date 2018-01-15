@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragments/header :: header"></div>
+<body>
+
+<div class="container">
+    <br/>
+    <p th:text=" 'Project URL: ' + ${projectUrl}"/>
+    <br/>
+
+    <div th:if="${not #lists.isEmpty(commits)}" >
+        <table class="table table-bordered table-hover table-sm" >
+            <thead>
+            <tr>
+                <th scope="col">Project Id</th>
+                <th scope="col">Commit Id</th>
+                <th scope="col">Author</th>
+                <th scope="col">Date</th>
+                <th scope="col">Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr data-th-each="commit : ${commits}">
+                <td data-th-text="${commit.projectId}"></td>
+                <td data-th-text="${commit.commitId}"></td>
+                <td data-th-text="${commit.author}"></td>
+                <td data-th-text="${commit.commitDate}"></td>
+                <td data-th-text="${commit.comment}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+
+</body>
+</html>
