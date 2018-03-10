@@ -44,9 +44,9 @@ public class ProjectFacade implements IProjectFacade {
         if (url.getUrl() != null && !"".equals(url.getUrl()) && !getProjectService().isProjectExist(url.getUrl())) {
             Project project = new Project();
 
-            if(getProjectService().createNewProjectByUrl(url.getUrl())){
+            if(getProjectService().createNewProjectByUrl(url.getUrl().trim())){
                 project = getProjectService()
-                        .getProjectByName(getUtilFile().getProjectName(url.getUrl()));
+                        .getProjectByName(getUtilFile().getProjectName(url.getUrl().trim()));
 
                 saveGitCommitLogsByProject(project);
             }
