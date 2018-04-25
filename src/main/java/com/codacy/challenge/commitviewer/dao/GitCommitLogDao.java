@@ -1,9 +1,12 @@
 package com.codacy.challenge.commitviewer.dao;
 
+import com.codacy.challenge.commitviewer.mapper.GitCommitEntityMapper;
 import com.codacy.challenge.commitviewer.model.GitCommitLogEntity;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -15,7 +18,6 @@ import java.util.stream.Collectors;
 public class GitCommitLogDao implements IGitCommitLogDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private Function<GitCommitLogEntity, Object[]> entityToObjectArray = gitLog -> new Object[]{ gitLog.getCommitId(), gitLog.getAuthor(), gitLog.getCommitDate(), gitLog.getComment(), gitLog.getProjectId()};
 
     @Autowired
     public GitCommitLogDao(JdbcTemplate jdbcTemplate) {
@@ -23,10 +25,10 @@ public class GitCommitLogDao implements IGitCommitLogDao {
     }
 
     @Override
-    public void save(Collection<GitCommitLogEntity> gitCommitLogs) {
+    public void save(final Collection<GitCommitLogEntity> gitCommitLogs) {
 
         List<Object[]> gitLogArray = gitCommitLogs.stream()
-                .map(entityToObjectArray)
+                .map(GitCommitEntityMapper.entityToObjectArray)
                 .collect(Collectors.toList());
 
         getJdbcTemplate().batchUpdate(GitCommitLogEntity.INSERT_ALL_BATCH, gitLogArray);
@@ -34,15 +36,17 @@ public class GitCommitLogDao implements IGitCommitLogDao {
 
     @Override
     public Collection<GitCommitLogEntity> getAll() {
-        return getJdbcTemplate().query(GitCommitLogEntity.SELECT_ALL, new BeanPropertyRowMapper<>(GitCommitLogEntity.class));
+        return ImmutableList.copyOf(getJdbcTemplate().query(GitCommitLogEntity.SELECT_ALL,
+                GitCommitEntityMapper.gitCommitLogEntityRowMapper));
     }
 
     @Override
-    public Collection<GitCommitLogEntity> getCommitLogByProjectId(Integer projectId) {
-        return getJdbcTemplate().query(GitCommitLogEntity.SELECT_BY_PROJECT_ID, new Object[] {projectId}, new BeanPropertyRowMapper<>(GitCommitLogEntity.class));
+    public Collection<GitCommitLogEntity> getCommitLogByProjectId(final Integer projectId) {
+        return ImmutableList.copyOf(getJdbcTemplate().query(GitCommitLogEntity.SELECT_BY_PROJECT_ID, new Object[] {projectId},
+                GitCommitEntityMapper.gitCommitLogEntityRowMapper));
     }
 
-    public JdbcTemplate getJdbcTemplate() {
+    private JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
 }

@@ -1,6 +1,5 @@
 package com.codacy.challenge.commitviewer.facade;
 
-import com.codacy.challenge.commitviewer.dto.GitCommitLog;
 import com.codacy.challenge.commitviewer.dto.Project;
 import com.codacy.challenge.commitviewer.dto.Url;
 import com.codacy.challenge.commitviewer.service.IGitRepositoryService;
@@ -41,44 +40,39 @@ public class ProjectFacade implements IProjectFacade {
     @Override
     public Optional<Project> createNewProject(Url url) {
 
-        if (url.getUrl() != null && !"".equals(url.getUrl()) && !getProjectService().isProjectExist(url.getUrl())) {
-            Project project = new Project();
+        if (url.getUrl() != null && !"".equals(url.getUrl()) && !getProjectService().isProjectExist(url.getUrl())
+                && getProjectService().createNewProjectByUrl(url.getUrl().trim())) {
 
-            if(getProjectService().createNewProjectByUrl(url.getUrl().trim())){
-                project = getProjectService()
+                final Project project = getProjectService()
                         .getProjectByName(getUtilFile().getProjectName(url.getUrl().trim()));
 
                 saveGitCommitLogsByProject(project);
-            }
 
             return Optional.of(project);
 
         }else {
-            return  Optional.of(new Project());
+            return  Optional.empty();
         }
     }
 
     @Override
     public void saveGitCommitLogsByProject(Project project) {
-        Collection<GitCommitLog> collection = null;
 
             try {
-                collection = getGitClientService().getGitCommitLogFromRestApi(project.getUrl(), project);
+                getGitRepository().saveCommitLogByProject(getGitClientService().getGitCommitLogFromRestApi(project.getUrl(), project), project);
             }catch (RestClientException e){
                 log.error(e.getMessage());
-                collection = getGitRepository().getGitCommitLogFromLocalRepository(project);
+                getGitRepository().saveCommitLogByProject(getGitRepository().getGitCommitLogFromLocalRepository(project), project);
             }
 
-            getGitRepository().saveCommitLogByProject(collection, project);
+
     }
 
 
     @Override
     public Project getCommitLogListByProjectName(String url) {
         final Project project = getProjectService().getProjectByName(url);
-        project.setGitCommitLogs(getGitRepository().getCommitListByProjectId(project.getProjectId()));
-
-        return project;
+        return Project.getInstance(project.getProjectId(), project.getProjectName(), project.getUrl(), getGitRepository().getCommitListByProjectId(project.getProjectId()));
     }
 
     private IProjectService getProjectService() {

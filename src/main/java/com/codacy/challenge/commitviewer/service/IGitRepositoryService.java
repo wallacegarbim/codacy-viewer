@@ -10,5 +10,5 @@ public interface IGitRepositoryService {
     Git cloneRepository(String url);
     Collection<GitCommitLog> getCommitListByProjectId(Integer projectId);
     Collection<GitCommitLog> getGitCommitLogFromLocalRepository(Project project);
-    void saveCommitLogByProject(Collection<GitCommitLog> entities, Project project);
+    void saveCommitLogByProject(final Collection<GitCommitLog> entities, final Project project);
 }

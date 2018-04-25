@@ -1,8 +1,9 @@
 package com.codacy.challenge.commitviewer.dao;
 
+import com.codacy.challenge.commitviewer.mapper.ProjectEntityMapper;
 import com.codacy.challenge.commitviewer.model.ProjectEntity;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -26,12 +27,14 @@ public class ProjectDao implements IProjectDao {
 
     @Override
     public Collection<ProjectEntity> listAll() {
-        return getJdbcTemplate().query(ProjectEntity.SELECT_ALL, new BeanPropertyRowMapper<>(ProjectEntity.class));
+        return ImmutableList.copyOf(getJdbcTemplate().query(ProjectEntity.SELECT_ALL,
+                ProjectEntityMapper.projectEntityRowMapper ));
     }
 
     @Override
     public Optional<ProjectEntity> getProjectByName(String projectName) {
-        return Optional.of(getJdbcTemplate().queryForObject(ProjectEntity.SELECT_BY_NAME, new Object[] {projectName}, new BeanPropertyRowMapper<>(ProjectEntity.class)));
+        return Optional.of(getJdbcTemplate().queryForObject(ProjectEntity.SELECT_BY_NAME, new Object[] {projectName},
+                ProjectEntityMapper.projectEntityRowMapper));
     }
 
     @Override

@@ -1,11 +1,8 @@
 package com.codacy.challenge.commitviewer.model;
 
-import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
 import java.util.Collection;
 
-@Component
 public class ProjectEntity implements Serializable, Comparable<ProjectEntity> {
 
     private static final long serialVersionUID = 8738362477968396937L;
@@ -15,18 +12,20 @@ public class ProjectEntity implements Serializable, Comparable<ProjectEntity> {
     public static final String SELECT_ALL = "SELECT * FROM " + ProjectEntity.PROJECT_TABLE + " ORDER BY project_name asc";
     private static final String PROJECT_TABLE = "project";
 
-    private Integer projectId;
-    private String projectName;
-    private String url;
+    private final Integer projectId;
+    private final String projectName;
+    private final String url;
     private Collection<GitCommitLogEntity> gitCommitLogEntities;
 
-    public ProjectEntity(String projectName, String url) {
+    private ProjectEntity(final Integer projectId, final String projectName, final String url, final Collection<GitCommitLogEntity> gitCommitLogEntities) {
+        this.projectId = projectId;
         this.projectName = projectName;
         this.url = url;
+        this.gitCommitLogEntities = gitCommitLogEntities;
     }
 
-    public ProjectEntity() {
-        //Default constructor
+    public static ProjectEntity getInstance(final Integer projectId, final String projectName, final String url, Collection<GitCommitLogEntity> gitCommitLogEntities){
+        return new ProjectEntity( projectId, projectName, url, gitCommitLogEntities);
     }
 
     public String getProjectName() {
@@ -43,18 +42,6 @@ public class ProjectEntity implements Serializable, Comparable<ProjectEntity> {
 
     public Integer getProjectId() {
         return projectId;
-    }
-
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     @Override

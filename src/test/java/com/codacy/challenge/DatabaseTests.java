@@ -38,15 +38,13 @@ public class DatabaseTests {
     public void insertSomeData(){
         getDatabaseConfiguration().createTables();
         List<GitCommitLogEntity> lst = new ArrayList<>();
-        ProjectEntity project = new ProjectEntity();
-        project.setProjectName("commit-viewer");
-        project.setUrl("url");
+        final ProjectEntity project = ProjectEntity.getInstance(null, "commit-viewer", "url", null);
 
         getProjectDao().save(project);
-        project = getProjectDao().getProjectByName(project.getProjectName()).orElse(new ProjectEntity());
+        final ProjectEntity project2 = getProjectDao().getProjectByName(project.getProjectName()).get();
 
-        lst.add(new GitCommitLogEntity("5454454554", "Wallace Garbim wallacegarbim@gmail.com", new Date(), "teste", project.getProjectId()));
-        lst.add(new GitCommitLogEntity("98798798", "Luciana Garbim lucianagarbim@gmail.com", new Date(), "teste 2", project.getProjectId()));
+        lst.add(GitCommitLogEntity.getInstance("5454454554", "Wallace Garbim wallacegarbim@gmail.com", new Date(), "teste", project2.getProjectId()));
+        lst.add(GitCommitLogEntity.getInstance("98798798", "Luciana Garbim lucianagarbim@gmail.com", new Date(), "teste 2", project2.getProjectId()));
 
         getGitCommitLogDao().save(lst);
         assertEquals("5454454554", getGitCommitLogDao().getAll().stream().findFirst().get().getCommitId());
@@ -57,15 +55,13 @@ public class DatabaseTests {
     public void countData(){
         getDatabaseConfiguration().createTables();
         List<GitCommitLogEntity> lst = new ArrayList<>();
-        ProjectEntity project = new ProjectEntity();
-        project.setProjectName("commit-viewer");
-        project.setUrl("url");
+        ProjectEntity project = ProjectEntity.getInstance(null, "commit-viewer", "url", null);
 
         getProjectDao().save(project);
-        project = getProjectDao().getProjectByName(project.getProjectName()).orElse(new ProjectEntity());
+        final ProjectEntity project2 = getProjectDao().getProjectByName(project.getProjectName()).get();
 
-        lst.add(new GitCommitLogEntity("5454454554", "Wallace Garbim wallacegarbim@gmail.com", new Date(), "teste", project.getProjectId()));
-        lst.add(new GitCommitLogEntity("98798798", "Luciana Garbim lucianagarbim@gmail.com", new Date(), "teste 2", project.getProjectId()));
+        lst.add(GitCommitLogEntity.getInstance("5454454554", "Wallace Garbim wallacegarbim@gmail.com", new Date(), "teste", project2.getProjectId()));
+        lst.add(GitCommitLogEntity.getInstance("98798798", "Luciana Garbim lucianagarbim@gmail.com", new Date(), "teste 2", project2.getProjectId()));
 
         getGitCommitLogDao().save(lst);
         assertEquals(2, getGitCommitLogDao().getAll().stream().count());

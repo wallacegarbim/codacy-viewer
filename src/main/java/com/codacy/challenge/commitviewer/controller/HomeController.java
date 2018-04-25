@@ -6,29 +6,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping(value = "/")
 public class HomeController {
 
     private final IProjectFacade projectFacade;
 
     @Autowired
-    public HomeController(IProjectFacade projectFacade) {
+    public HomeController(final IProjectFacade projectFacade) {
         this.projectFacade = projectFacade;
     }
 
     @GetMapping
-    public ModelAndView home(Map<String, Object> model) {
+    public ModelAndView home(final Map<String, Object> model) {
        model.put("url", new Url());
        model.put("projectList", getProjectFacade().listAll());
        return new ModelAndView("index", model);
     }
 
-    public IProjectFacade getProjectFacade() {
+    private IProjectFacade getProjectFacade() {
         return projectFacade;
     }
 }

@@ -22,20 +22,15 @@ public class GitRestClientService implements IGitClientService {
     private final UtilFile utilFile;
     private final RestTemplate restTemplate;
     private final UtilGitRestClient utilGitRestClient;
-    private BiFunction<Object, Project, GitCommitLog> objectArrayToGitCommitLogDto = (obj, project) -> {
+    private final BiFunction<Object, Project, GitCommitLog> objectArrayToGitCommitLogDto = (obj, project) -> {
 
         LinkedHashMap map  = (LinkedHashMap) obj;
-        final GitCommitLog result = new GitCommitLog();
-        result.setCommitId((String) map.get("sha"));
         final LinkedHashMap commitMap = (LinkedHashMap) map.get("commit");
         final LinkedHashMap committerMap = (LinkedHashMap) commitMap.get("committer");
 
-        result.setAuthor(committerMap.get("name") + " - " + committerMap.get("email"));
-        result.setCommitDate(Date.from(ZonedDateTime.parse((String) committerMap.get("date")).toInstant()));
-        result.setComment((String) commitMap.get("message"));
-        result.setProjectId(project.getProjectId());
-
-        return result;
+        return GitCommitLog.getInstance((String) map.get("sha"), committerMap.get("name") + " - " + committerMap.get("email"),
+                Date.from(ZonedDateTime.parse((String) committerMap.get("date")).toInstant()), (String) commitMap.get("message"),
+                project.getProjectId());
     };
 
     @Autowired

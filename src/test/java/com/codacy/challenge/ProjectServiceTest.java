@@ -38,10 +38,7 @@ public class ProjectServiceTest {
     @Before
     public void databaseInitData(){
         getDatabaseConfiguration().createTables();
-        project = new Project();
-        project.setProjectName(PROJECT_NAME);
-        project.setUrl(URL);
-
+        project = Project.getInstance(null, PROJECT_NAME, URL, null);
         getProjectService().save(project);
     }
 

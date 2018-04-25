@@ -7,5 +7,5 @@ import java.util.Collection;
 public interface IGitCommitLogDao {
     void save(Collection<GitCommitLogEntity> gitCommitLogs);
     Collection<GitCommitLogEntity> getAll();
-    Collection<GitCommitLogEntity> getCommitLogByProjectId(Integer projectId);
+    Collection<GitCommitLogEntity> getCommitLogByProjectId(final Integer projectId);
 }

@@ -1,6 +1,6 @@
 package com.codacy.challenge.commitviewer.dto;
 
-public class Url {
+public final class Url {
 
     private String urlValue;
 

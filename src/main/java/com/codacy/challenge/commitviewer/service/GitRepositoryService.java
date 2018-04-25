@@ -23,8 +23,8 @@ public class GitRepositoryService implements IGitRepositoryService {
     private static final Logger log = LoggerFactory.getLogger(GitRepositoryService.class);
     private UtilFile utilFile;
     private final IGitCommitLogDao gitCommitLogDao;
-    private Function<GitCommitLogEntity, GitCommitLog> entityToDtoWithProjectId = entity -> new GitCommitLog(entity.getCommitId(), entity.getAuthor(), entity.getCommitDate(), entity.getComment(), entity.getProjectId());
-    private Function<GitCommitLog, GitCommitLogEntity> dtoToEntityWithProjectId = dto -> new GitCommitLogEntity(dto.getCommitId(), dto.getAuthor(), dto.getCommitDate(), dto.getComment(), dto.getProjectId());
+    private Function<GitCommitLogEntity, GitCommitLog> entityToDtoWithProjectId = entity -> GitCommitLog.getInstance(entity.getCommitId(), entity.getAuthor(), entity.getCommitDate(), entity.getComment(), entity.getProjectId());
+    private Function<GitCommitLog, GitCommitLogEntity> dtoToEntityWithProjectId = dto -> GitCommitLogEntity.getInstance(dto.getCommitId(), dto.getAuthor(), dto.getCommitDate(), dto.getComment(), dto.getProjectId());
 
     @Autowired
     public GitRepositoryService(UtilFile utilFile, IGitCommitLogDao gitCommitLogDao) {
@@ -60,7 +60,7 @@ public class GitRepositoryService implements IGitRepositoryService {
         Collection<GitCommitLog> result = new HashSet<>();
         try {
             git.log().call().forEach( revCommit ->
-                result.add(new GitCommitLog(revCommit.getName(), revCommit.getAuthorIdent().getName() + " - " +
+                result.add(GitCommitLog.getInstance(revCommit.getName(), revCommit.getAuthorIdent().getName() + " - " +
                         revCommit.getAuthorIdent().getEmailAddress(), revCommit.getCommitterIdent().getWhen(), revCommit.getShortMessage(), project.getProjectId())));
             return result;
         } catch (GitAPIException e) {
@@ -70,10 +70,9 @@ public class GitRepositoryService implements IGitRepositoryService {
     }
 
     @Override
-    public void saveCommitLogByProject(Collection<GitCommitLog> gitCommitLogs, Project project) {
+    public void saveCommitLogByProject(final Collection<GitCommitLog> gitCommitLogs, final Project project) {
         Collection<GitCommitLogEntity> result = gitCommitLogs.stream()
                 .map(dtoToEntityWithProjectId)
-                .peek(entity -> entity.setProjectId(project.getProjectId()))
                 .collect(Collectors.toList());
 
         getGitCommitLogDao().save(result);
